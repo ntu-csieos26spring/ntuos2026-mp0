@@ -41,7 +41,7 @@ For a tailored onboarding experience, explore our modular guides:
 
 > **🔄 Mastering the Cycle.** Understand how to create custom tests, interpret GitHub Actions results, and the rules of the grading cycle.
 
-### 4. [Assignment Specification](doc/mp0.md)
+### 4. [Assignment Specification (doc/mp0.md)](doc/mp0.md)
 
 > **📋 Task Requirements.** Detailed technical specifications and goals for the current Machine Problem (find the specific `mpX.md` in the current branch).
 
