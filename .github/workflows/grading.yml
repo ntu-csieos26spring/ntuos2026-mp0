@@ -1,0 +1,59 @@
+name: Grading System
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'ntuos2026/*'
+    paths-ignore:
+      - 'README.md'
+      - 'doc/**'
+  workflow_dispatch: {}
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for commit verification
+
+      - name: Trust Git Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+
+
+      - name: Verify Student Identity
+        id: verify
+        run: |
+          # Use the sanitized grade runner to verify identity
+          python3 grade/verify_committer.py
+        env:
+          # Pass TA Emails via Env (or read from mp.conf inside script)
+          # The script will read mp.conf directly.
+          PYTHONUNBUFFERED: "1"
+
+      - name: Execute Tests (Grading)
+        id: test
+        run: |
+          ./mp.sh grade --json report.json --markdown grade-report.md
+        env:
+          OFFICIAL_GRADING: "1"
+          REPO_IS_PRIVATE: ${{ github.event.repository.private }}
+
+      - name: Add Visual Summary
+        if: always()
+        run: |
+          if [ -f grade-report.md ]; then
+            cat grade-report.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grading-report
+          path: report.json
